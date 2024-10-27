@@ -5,6 +5,8 @@ import (
 	"time"
 )
 
+const INITIAL_TASKLIST_CAPACITY = 100
+
 type Task struct {
 	Description string
 	Id          uint64
@@ -25,5 +27,9 @@ type TaskList struct {
 }
 
 func NewTaskList() TaskList {
-	return TaskList{Size: 0, Tasks: make([]Task, 0)}
+	return TaskList{Size: 0, Tasks: make([]Task, 0, INITIAL_TASKLIST_CAPACITY)}
+}
+
+func (t *TaskList) AddTask(newTask Task) {
+	t.Tasks = append(t.Tasks, newTask)
 }

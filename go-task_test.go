@@ -17,6 +17,12 @@ func assertTimeCloseToNow(t *testing.T, name string, got time.Time) {
 	}
 }
 
+func assertTaskEquals(t *testing.T, got, want Task) {
+	if got != want {
+		t.Errorf("Wanted: %v, Got %v", want, got)
+	}
+}
+
 func TestCreateTask(t *testing.T) {
 	t.Run("Test Task Constructor", func(t *testing.T) {
 		got := NewTask()
@@ -38,7 +44,7 @@ func TestCreateTask(t *testing.T) {
 	})
 }
 
-func TestAddTask(t *testing.T) {
+func TestTaskList(t *testing.T) {
 	t.Run("Test Task List Constructor", func(t *testing.T) {
 		taskList := NewTaskList()
 		// Want empty task list with length 0 and no elements
@@ -50,7 +56,12 @@ func TestAddTask(t *testing.T) {
 		}
 	})
 
-	t.Run("Test AddTask to TaskList", func(t *testing.T) {
+	t.Run("Test AddTask method", func(t *testing.T) {
+		taskList := NewTaskList()
+		want := NewTask()
+		taskList.AddTask(want)
+
+		assertTaskEquals(t, taskList.Tasks[0], want)
 
 	})
 }
