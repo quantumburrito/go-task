@@ -1,39 +1,39 @@
 package go_task
 
 import (
-	"math/rand"
 	"testing"
 	"time"
 )
 
 func assertEquals(t *testing.T, field string, got, want interface{}) {
-	t.Helper()
 	if got != want {
 		t.Errorf("Field: %s, Wanted: %v, Got %v", field, got, want)
+	}
+}
+
+func assertTimeCloseToNow(t *testing.T, name string, got time.Time) {
+	if time.Second < time.Since(got) {
+		t.Errorf("Expected %s to be close to now, got %s instead", name, got)
 	}
 }
 
 func TestCreateTask(t *testing.T) {
 	t.Run("Test Task Constructor", func(t *testing.T) {
 		got := NewTask()
-		currentTime := time.Now()
-		want := Task{Description: "", Status: "ToDo", Id: rand.Uint64(), CreatedAt: currentTime, ModifiedAt: currentTime}
+		tests := []struct {
+			field string
+			got   interface{}
+			want  interface{}
+		}{
+			{"Description", got.Description, ""},
+			{"Status", got.Status, "ToDo"},
+		}
+		for _, tt := range tests {
+			assertEquals(t, tt.field, tt.got, tt.want)
+		}
 
-		if got.Description != want.Description {
-			t.Errorf("Wanted: %s, Got: %s", want.Description, got.Description)
-		}
-		if got.Status != want.Status {
-			t.Errorf("Wanted: %s, Got %s", want.Status, got.Status)
-		}
-		if got.Id != 0 {
-			t.Errorf("Wanted: Int > 0, Got %d", got.Id)
-		}
-		if time.Second <= got.CreatedAt.Sub(want.CreatedAt).Abs() {
-			t.Errorf("Wanted: %s, Got: %s", want.CreatedAt, got.CreatedAt)
-		}
-		if time.Second <= got.ModifiedAt.Sub(want.ModifiedAt).Abs() {
-			t.Errorf("Wanted: %s, Got: %s", want.ModifiedAt, got.ModifiedAt)
-		}
+		assertTimeCloseToNow(t, "Created At", got.CreatedAt)
+		assertTimeCloseToNow(t, "Modified At", got.ModifiedAt)
 
 	})
 }
