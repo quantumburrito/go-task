@@ -62,7 +62,25 @@ func TestTaskList(t *testing.T) {
 		taskList.AddTask(want)
 
 		assertTaskEquals(t, taskList.Tasks[0], want)
+	})
+	t.Run("Add Multiple empty tasks to task list using AddTask", func(t *testing.T) {
+		taskList := NewTaskList()
 
+		// Generate 5 random Tasks
+		testTasks := make([]Task, 5)
+		for index, _ := range testTasks {
+			testTasks[index] = NewTask()
+		}
+
+		// add them to the taskList
+		for _, task := range testTasks {
+			taskList.AddTask(task)
+		}
+
+		// assert added tasks are equivilant to expected value
+		for index, task := range testTasks {
+			assertTaskEquals(t, taskList.Tasks[index], task)
+		}
 	})
 }
 func TestReadTodoFile(t *testing.T) {
