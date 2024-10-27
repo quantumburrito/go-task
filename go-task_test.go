@@ -38,6 +38,22 @@ func TestCreateTask(t *testing.T) {
 	})
 }
 
+func TestAddTask(t *testing.T) {
+	t.Run("Test Task List Constructor", func(t *testing.T) {
+		taskList := NewTaskList()
+		// Want empty task list with length 0 and no elements
+		if taskList.Size != 0 {
+			t.Errorf("Expected Size: 0, Got: %d", taskList.Size)
+		}
+		if len(taskList.Tasks) > 0 {
+			t.Errorf("Expected length of task list: 0, Got: %d", len(taskList.Tasks))
+		}
+	})
+
+	t.Run("Test AddTask to TaskList", func(t *testing.T) {
+
+	})
+}
 func TestReadTodoFile(t *testing.T) {
 	// TODO:: implement test to read mock todo file
 }

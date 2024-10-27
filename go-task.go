@@ -18,3 +18,12 @@ func NewTask() Task {
 	creationTime := time.Now()
 	return Task{Description: "", Id: randNumber, Status: "ToDo", CreatedAt: creationTime, ModifiedAt: creationTime}
 }
+
+type TaskList struct {
+	Size  int
+	Tasks []Task
+}
+
+func NewTaskList() TaskList {
+	return TaskList{Size: 0, Tasks: make([]Task, 0)}
+}
