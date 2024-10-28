@@ -1,4 +1,4 @@
-package go_task
+package gotask
 
 import (
 	"fmt"
@@ -10,9 +10,9 @@ import (
 )
 
 // helper function, create structured task list and return slice of task ids
-func createStructuredTaskListAndTaskIDSlice(t testing.TB, upperBound int) (TaskList, []uint64) {
-	// Create a taskList, create a slice of uint64 to save taskID's
-	tl := NewTaskList()
+func createStructuredFileTaskRepositoryAndTaskIDSlice(t testing.TB, upperBound int) (FileTaskRepository, []uint64) {
+	// Create a FileTaskRepository, create a slice of uint64 to save taskID's
+	tl := NewFileTaskRepository()
 	taskIds := make([]uint64, 0, 10)
 
 	// create 10 Tasks , save id's to slice
@@ -48,7 +48,7 @@ func assertTaskEquals(t *testing.T, got, want Task) {
 	assertEquals(t, "ID", got.Id, want.Id)
 }
 
-func assertTaskListEquals(t *testing.T, got, want TaskList) {
+func assertFileTaskRepositoryEquals(t *testing.T, got, want FileTaskRepository) {
 	t.Helper()
 	if got.Size != want.Size {
 		t.Errorf("Size Error. Want: %d, Got: %d", want.Size, got.Size)
@@ -79,27 +79,27 @@ func TestCreateTask(t *testing.T) {
 	})
 }
 
-func TestTaskList(t *testing.T) {
+func TestFileTaskRepository(t *testing.T) {
 	t.Run("Test Task List Constructor", func(t *testing.T) {
-		taskList := NewTaskList()
+		FileTaskRepository := NewFileTaskRepository()
 		// Want empty task list with length 0 and no elements
-		if taskList.Size != 0 {
-			t.Errorf("Expected Size: 0, Got: %d", taskList.Size)
+		if FileTaskRepository.Size != 0 {
+			t.Errorf("Expected Size: 0, Got: %d", FileTaskRepository.Size)
 		}
-		if len(taskList.Tasks) > 0 {
-			t.Errorf("Expected length of task list: 0, Got: %d", len(taskList.Tasks))
+		if len(FileTaskRepository.Tasks) > 0 {
+			t.Errorf("Expected length of task list: 0, Got: %d", len(FileTaskRepository.Tasks))
 		}
 	})
 
 	t.Run("Test AddTask method", func(t *testing.T) {
-		taskList := NewTaskList()
+		FileTaskRepository := NewFileTaskRepository()
 		want := NewTask()
-		taskList.AddTask(want)
+		FileTaskRepository.AddTask(want)
 
-		assertTaskEquals(t, taskList.Tasks[0], want)
+		assertTaskEquals(t, FileTaskRepository.Tasks[0], want)
 	})
 	t.Run("Add Multiple empty tasks to task list using AddTask", func(t *testing.T) {
-		taskList := NewTaskList()
+		FileTaskRepository := NewFileTaskRepository()
 
 		// Generate 5 random Tasks
 		testTasks := make([]Task, 5)
@@ -107,19 +107,19 @@ func TestTaskList(t *testing.T) {
 			testTasks[index] = NewTask()
 		}
 
-		// add them to the taskList
+		// add them to the FileTaskRepository
 		for _, task := range testTasks {
-			taskList.AddTask(task)
+			FileTaskRepository.AddTask(task)
 		}
 
 		// assert added tasks are equivilant to expected value
 		for index, task := range testTasks {
-			assertTaskEquals(t, taskList.Tasks[index], task)
+			assertTaskEquals(t, FileTaskRepository.Tasks[index], task)
 		}
 	})
 }
 
-func TestTaskListFileIO(t *testing.T) {
+func TestFileTaskRepositoryFileIO(t *testing.T) {
 	// Create a temporary File
 	file, err := os.CreateTemp("", "example.tasks")
 	if err != nil {
@@ -128,42 +128,42 @@ func TestTaskListFileIO(t *testing.T) {
 	// at the end of the test, defer to removing the file
 	defer os.Remove(file.Name())
 
-	// Create TaskList and polulate with 5 random tasks
-	taskList := NewTaskList()
+	// Create FileTaskRepository and polulate with 5 random tasks
+	FileTaskRepository := NewFileTaskRepository()
 	for i := 0; i < 5; i++ {
 		task := NewTask()
 		task.Description = fmt.Sprintf("Task Number: %d", i)
-		taskList.AddTask(task)
+		FileTaskRepository.AddTask(task)
 	}
 
-	// Write taskList to the temporary File
-	if err := taskList.WriteToFile(file); err != nil {
+	// Write FileTaskRepository to the temporary File
+	if err := FileTaskRepository.Persist(file); err != nil {
 		t.Fatalf("Failed to Write to file: %v", err)
 	}
 
-	// Read back into a new TaskList
-	gotTaskList := NewTaskList()
-	if err := gotTaskList.ReadFromFile(file); err != nil {
+	// Read back into a new FileTaskRepository
+	gotFileTaskRepository := NewFileTaskRepository()
+	if err := gotFileTaskRepository.Load(file); err != nil {
 		t.Fatalf("Failed to Read from file: %v", err)
 	}
 
 	// Verify Contents
-	assertTaskListEquals(t, gotTaskList, taskList)
+	assertFileTaskRepositoryEquals(t, gotFileTaskRepository, FileTaskRepository)
 
 }
 
-func TestFindTask(t *testing.T) {
+func TestRetrieve(t *testing.T) {
 
-	t.Run("Test FindTask Method", func(t *testing.T) {
+	t.Run("Test Retrieve Method", func(t *testing.T) {
 
-		tl, taskIds := createStructuredTaskListAndTaskIDSlice(t, 10)
+		tl, taskIds := createStructuredFileTaskRepositoryAndTaskIDSlice(t, 10)
 
 		//randomly seelect 1 id from the slice
 		randomIndex := rand.Intn(len(taskIds))
 		randomTaskId := taskIds[randomIndex]
 
 		// find random Task
-		newTask, err := tl.FindTask(randomTaskId)
+		newTask, err := tl.Retrieve(randomTaskId)
 		if err != nil {
 			t.Errorf("couldn't find task: %v \t Error: %v", newTask, err)
 		}
@@ -178,17 +178,17 @@ func TestFindTask(t *testing.T) {
 	t.Run("Test that Find Task Method Fails when no task is found", func(t *testing.T) {
 
 		// create structured task list, don't need task id slice
-		tl, _ := createStructuredTaskListAndTaskIDSlice(t, 10)
+		tl, _ := createStructuredFileTaskRepositoryAndTaskIDSlice(t, 10)
 
 		// generate random task id
 		randomTaskId := rand.Uint64()
 
 		// find task with this random id
-		failedTask, err := tl.FindTask(randomTaskId)
+		failedTask, err := tl.Retrieve(randomTaskId)
 
-		// check to see if findTask Failed, if not report error
+		// check to see if Retrieve Failed, if not report error
 		if err == nil {
-			t.Errorf("FindTask did not fail as expected, %v", err)
+			t.Errorf("Retrieve did not fail as expected, %v", err)
 		}
 
 		// assert failed task equals empty task
@@ -199,10 +199,10 @@ func TestFindTask(t *testing.T) {
 	})
 }
 
-func TestUpdateTask(t *testing.T) {
+func TestUpdate(t *testing.T) {
 	t.Run("Correct implementaion of Update Task", func(t *testing.T) {
 		// create task list and task id slice with 10 random tasks
-		tl, tIds := createStructuredTaskListAndTaskIDSlice(t, 10)
+		tl, tIds := createStructuredFileTaskRepositoryAndTaskIDSlice(t, 10)
 
 		// create a new task to update
 		updatedTask := NewTask()
@@ -214,16 +214,16 @@ func TestUpdateTask(t *testing.T) {
 		updatedTask.Id = tIds[randomIndex]
 
 		// update task with id
-		err := tl.UpdateTask(updatedTask)
+		err := tl.Update(updatedTask)
 		if err != nil {
-			t.Errorf("updateTask failed to update task: %v", err)
+			t.Errorf("Update failed to update task: %v", err)
 		}
 
 	})
 
 	t.Run("Incorrect Implementation of Update Task", func(t *testing.T) {
 		// same as before, ignore task id slice
-		tl, _ := createStructuredTaskListAndTaskIDSlice(t, 10)
+		tl, _ := createStructuredFileTaskRepositoryAndTaskIDSlice(t, 10)
 
 		// create a new task to update
 		updatedTask := NewTask()
@@ -231,11 +231,11 @@ func TestUpdateTask(t *testing.T) {
 		updatedTask.Status = "Done"
 
 		// update task with id
-		err := tl.UpdateTask(updatedTask)
+		err := tl.Update(updatedTask)
 
 		// if error is not encountered, fail
 		if err == nil {
-			t.Errorf("UpdateTask Expected to fail but didn't: %v", err)
+			t.Errorf("Update Expected to fail but didn't: %v", err)
 		}
 	})
 }

@@ -1,45 +1,29 @@
-package go_task
+package gotask
 
 import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"math/rand"
 	"os"
-	"time"
 )
 
-const INITIAL_TASKLIST_CAPACITY = 100
-
-type Task struct {
-	Description string
-	Id          uint64
-	Status      string
-	CreatedAt   time.Time
-	ModifiedAt  time.Time
+type FileTaskRepository struct {
+	Size     int
+	Tasks    []Task
+	filename string
+	filepath string
 }
 
-func NewTask() Task {
-	randNumber := rand.Uint64()
-	creationTime := time.Now().UTC() // using utc to ensure monolythic component is recovered
-	return Task{Description: "", Id: randNumber, Status: "ToDo", CreatedAt: creationTime, ModifiedAt: creationTime}
+func NewFileTaskRepository() FileTaskRepository {
+	return FileTaskRepository{Size: 0, Tasks: make([]Task, 0, INITIAL_TASK_REPOSITORY_CAPACITY)}
 }
 
-type TaskList struct {
-	Size  int
-	Tasks []Task
-}
-
-func NewTaskList() TaskList {
-	return TaskList{Size: 0, Tasks: make([]Task, 0, INITIAL_TASKLIST_CAPACITY)}
-}
-
-func (t *TaskList) AddTask(newTask Task) {
+func (t *FileTaskRepository) AddTask(newTask Task) {
 	t.Size += 1
 	t.Tasks = append(t.Tasks, newTask)
 }
 
-func (t *TaskList) ReadFromFile(file *os.File) error {
+func (t *FileTaskRepository) Load(file *os.File) error {
 
 	// reset file poniter to begining of file
 	if _, err := file.Seek(0, 0); err != nil {
@@ -66,7 +50,7 @@ func (t *TaskList) ReadFromFile(file *os.File) error {
 
 }
 
-func (t *TaskList) WriteToFile(file *os.File) error {
+func (t *FileTaskRepository) Persist(file *os.File) error {
 	// clear the file before writing
 	if err := file.Truncate(0); err != nil {
 		return fmt.Errorf("failed to truncate file: %w", err)
@@ -89,7 +73,7 @@ func (t *TaskList) WriteToFile(file *os.File) error {
 	return nil
 }
 
-func (t *TaskList) FindTask(unknownID uint64) (*Task, error) {
+func (t *FileTaskRepository) Retrieve(unknownID uint64) (*Task, error) {
 	for _, task := range t.Tasks {
 		if task.Id == unknownID {
 			return &task, nil
@@ -99,9 +83,9 @@ func (t *TaskList) FindTask(unknownID uint64) (*Task, error) {
 	return nil, fmt.Errorf("task with id: %d not found", unknownID)
 }
 
-func (t *TaskList) UpdateTask(newTask Task) error {
+func (t *FileTaskRepository) Update(newTask Task) error {
 	// check to see if task exists
-	foundTask, err := t.FindTask(newTask.Id)
+	foundTask, err := t.Retrieve(newTask.Id)
 	if err != nil {
 		return err
 	}

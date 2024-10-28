@@ -1,6 +1,6 @@
 # Go Task CLI (Pre-Release)
 
-`Go Task CLI` is a command-line interface tool built in Go, designed to help manage tasks with statuses (ToDo, In Progress, Done) using a JSON storage file for persistence. This project is under active development, and the current version focuses on foundational code and testing.
+`Go Task CLI` is a command-line interface tool built in Go, designed to help manage tasks with statuses (ToDo, In Progress, Done) using a JSON storage file for Loadence. This project is under active development, and the current version focuses on foundational code and testing.
 
 ## Project Status
 
@@ -23,7 +23,7 @@ The following is a checklist of all planned and implemented features based on th
 - [ ] **List All Tasks**: Display all tasks regardless of status.
 - [ ] **List Tasks by Status**: Filter tasks by status (`ToDo`, `In Progress`, `Done`).
 
-### Data Persistence
+### Data Loadence
 - [ ] **JSON File Storage**: Save tasks to a JSON file in the current directory.
 - [ ] **Auto-Create JSON File**: Automatically create the JSON file if it does not exist.
 - [ ] **Handle JSON Read/Write Errors**: Gracefully handle file system and JSON errors.
