@@ -1,34 +1,54 @@
+Here’s a comprehensive README draft for your **Go Task CLI** project, incorporating the requirements doc, a feature checklist, a release schedule, and notes on the CI pipeline. This format provides clarity on current and future functionality, making it ideal for contributors and users to track development progress.
+
+---
+
 # Go Task CLI (Pre-Release)
 
-`Go Task CLI` is a command-line interface tool designed in Go to manage tasks with statuses (ToDo, In Progress, Done) using a JSON storage approach. This app is under active development, following a Test-Driven Development (TDD) approach. Currently, only unit tests are available to verify core functionalities, with a full CLI implementation planned for future releases.
+`Go Task CLI` is a command-line interface tool built in Go, designed to help manage tasks with statuses (ToDo, In Progress, Done) using a JSON storage file for persistence. This project is under active development, and the current version focuses on foundational code and testing.
 
-## Current Status
+## Project Status
 
-This is a pre-release version, intended primarily for testing purposes. The CLI features are not yet operational, but the foundational code and tests for handling tasks are in place.
+This pre-release version includes only core structures and tests. CLI functionality is planned for upcoming releases. A CI pipeline is in place to ensure that every pull request (PR) to `main` and `dev` branches, as well as commits to `main`, trigger builds and run tests.
 
 ## Features
 
-In the current state, `Go Task CLI` includes:
+The following is a checklist of all planned and implemented features based on the requirements:
 
-- **Task Struct and Basic Logic**: Core logic for task creation, including ID generation, timestamps (`createdAt` and `updatedAt`), and status (`ToDo` by default).
-- **JSON Data Structure**: Planned JSON storage design to save and load task data in future versions.
-- **Test-Driven Development**: Unit tests are implemented to ensure key functionalities align with requirements.
-  
-## Requirements
+### Core Task Management
+- [x] **Task Struct and Basic Logic**: Create a `Task` struct with fields for ID, description, status, created_at, and updated_at.
+- [ ] **Add Task**: Add new tasks from the command line with an auto-generated ID.
+- [ ] **Update Task**: Modify task description and update the `updatedAt` timestamp.
+- [ ] **Delete Task**: Remove a task by its unique ID.
 
-The application will eventually fulfill the following requirements:
+### Task Status Tracking
+- [x] **Default Status (`ToDo`)**: Initialize tasks with a default status of `ToDo`.
+- [ ] **Mark Task as In Progress**: Update the status of a task to "In Progress".
+- [ ] **Mark Task as Done**: Update the status of a task to "Done".
+- [ ] **List All Tasks**: Display all tasks regardless of status.
+- [ ] **List Tasks by Status**: Filter tasks by status (`ToDo`, `In Progress`, `Done`).
 
-- **Task Actions**: Allow users to add, update, delete, and mark tasks as "in progress" or "done".
-- **Task Status Tracking**: List tasks filtered by status (`ToDo`, `In Progress`, `Done`).
-- **Data Persistence**: Tasks will be saved to a JSON file, which will be created automatically if not present.
-- **Error Handling**: Graceful handling of invalid inputs and missing files.
-  
+### Data Persistence
+- [ ] **JSON File Storage**: Save tasks to a JSON file in the current directory.
+- [ ] **Auto-Create JSON File**: Automatically create the JSON file if it does not exist.
+- [ ] **Handle JSON Read/Write Errors**: Gracefully handle file system and JSON errors.
+
+### User Experience and CLI Usability
+- [ ] **Positional Arguments for CLI**: Use positional arguments to accept user inputs from the command line.
+- [ ] **Error Messages for Invalid Commands**: Display descriptive error messages for invalid actions or inputs.
+- [ ] **Edge Case Handling**: Manage cases like non-existent task IDs, empty task descriptions, and invalid statuses.
+
+### Testing and Development Workflow
+- [x] **Test-Driven Development (TDD)**: Write unit tests for key functions to ensure reliable implementation.
+- [x] **CI/CD Pipeline**: Automated pipeline that builds and tests on PRs and commits to `main` and `dev` branches.
+
 ## Project Structure
+
+The project is organized as follows:
 
 ```
 go-task/
 │
-├── go-task.go           # Core logic with Task struct (pre-release state)
+├── go-task.go           # Primary codebase with Task struct and task logic
 ├── go-task_test.go      # Unit tests to verify foundational logic
 ├── go.mod               # Go module file indicating dependencies
 ├── LICENSE              # Project's licensing information (MIT)
@@ -56,29 +76,13 @@ Since this pre-release focuses on TDD, you can run the included unit tests to va
 go test ./...
 ```
 
-The tests cover:
 
-- **Task Creation**: Ensures each task has unique IDs, default status as `ToDo`, and proper timestamps.
-- **Structured Task List Setup**: Initializes a list of tasks to verify core list handling.
+## Continuous Integration
 
-## TODO: Planned Features
+This project uses a CI/CD pipeline that:
 
-These features will be developed in upcoming releases, based on the initial requirements:
-
-1. **CLI Task Management**:
-   - Add CLI commands to add, update, delete, and list tasks based on status.
-
-2. **JSON Storage Integration**:
-   - Implement JSON read/write functionality for data persistence across sessions.
-
-3. **Error and Edge Case Handling**:
-   - Manage non-existent task IDs, missing JSON files, and invalid inputs with user-friendly error messages.
-
-4. **Enhanced Status Commands**:
-   - Extend commands to set tasks as "in progress" or "done" and filter lists based on these statuses.
-
-5. **Full Task Lifecycle Testing**:
-   - Expand tests to cover edge cases and the complete task management lifecycle.
+- **Builds and Tests**: Runs automatically on every pull request (PR) to the `main` and `dev` branches, and on every commit to `main`.
+- **Code Validation**: Ensures consistent testing to detect and prevent issues early in the development cycle.
 
 ## License
 
@@ -86,4 +90,4 @@ This project is licensed under the MIT License.
 
 ---
 
-This README sets clear expectations for current functionality and the planned roadmap. Let me know if this matches your needs or if there’s anything more to add!
+This README provides a clear overview of current progress and future milestones, with a checklist to easily track feature completion. Let me know if there are any adjustments you'd like to make!
