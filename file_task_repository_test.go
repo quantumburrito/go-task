@@ -58,7 +58,7 @@ func assertFileTaskRepositoryEquals(t *testing.T, got, want FileTaskRepository) 
 	}
 }
 
-func TestCreateTask(t *testing.T) {
+func TestCreate_Task(t *testing.T) {
 	t.Run("Test Task Constructor", func(t *testing.T) {
 		got := NewTask()
 		tests := []struct {
@@ -152,7 +152,7 @@ func TestFileTaskRepositoryFileIO(t *testing.T) {
 
 }
 
-func TestRetrieve(t *testing.T) {
+func TestRetrieve_FileTaskRepository(t *testing.T) {
 
 	t.Run("Test Retrieve Method", func(t *testing.T) {
 
@@ -199,7 +199,7 @@ func TestRetrieve(t *testing.T) {
 	})
 }
 
-func TestUpdate(t *testing.T) {
+func TestUpdate_FileTaskRepository(t *testing.T) {
 	t.Run("Correct implementaion of Update Task", func(t *testing.T) {
 		// create task list and task id slice with 10 random tasks
 		tl, tIds := createStructuredFileTaskRepositoryAndTaskIDSlice(t, 10)
