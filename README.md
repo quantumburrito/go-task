@@ -83,7 +83,3 @@ This project uses a CI/CD pipeline that:
 ## License
 
 This project is licensed under the MIT License.
-
----
-
-This README provides a clear overview of current progress and future milestones, with a checklist to easily track feature completion. Let me know if there are any adjustments you'd like to make!
