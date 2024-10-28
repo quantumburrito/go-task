@@ -1,7 +1,3 @@
-Here’s a comprehensive README draft for your **Go Task CLI** project, incorporating the requirements doc, a feature checklist, a release schedule, and notes on the CI pipeline. This format provides clarity on current and future functionality, making it ideal for contributors and users to track development progress.
-
----
-
 # Go Task CLI (Pre-Release)
 
 `Go Task CLI` is a command-line interface tool built in Go, designed to help manage tasks with statuses (ToDo, In Progress, Done) using a JSON storage file for persistence. This project is under active development, and the current version focuses on foundational code and testing.
