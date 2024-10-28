@@ -218,4 +218,22 @@ func TestUpdateTask(t *testing.T) {
 		}
 
 	})
+
+	t.Run("Incorrect Implementatino of Update Task", func(t *testing.T) {
+		// same as before, ignore task id slice
+		tl, _ := createStructuredTaskListAndTaskIDSlice(t, 10)
+
+		// create a new task to update
+		updatedTask := NewTask()
+		updatedTask.Description = "Updated Task"
+		updatedTask.Status = "Done"
+
+		// update task with id
+		err := tl.UpdateTask(updatedTask)
+
+		// if error is not encountered, fail
+		if err == nil {
+			t.Errorf("UpdateTask Expected to fail but didn't: %v", err)
+		}
+	})
 }

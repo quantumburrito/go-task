@@ -98,3 +98,8 @@ func (t *TaskList) FindTask(unknownID uint64) (Task, error) {
 
 	return Task{}, fmt.Errorf("task with id: %d not found", unknownID)
 }
+
+func (t *TaskList) UpdateTask(newTask Task) error {
+	return nil
+
+}
