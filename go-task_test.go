@@ -3,24 +3,28 @@ package go_task
 import (
 	"fmt"
 	"log"
+	"math/rand"
 	"os"
 	"testing"
 	"time"
 )
 
 func assertEquals(t *testing.T, field string, got, want interface{}) {
+	t.Helper()
 	if got != want {
 		t.Errorf("Field: %s, Wanted: %v, Got %v", field, got, want)
 	}
 }
 
 func assertTimeCloseToNow(t *testing.T, name string, got time.Time) {
+	t.Helper()
 	if time.Second < time.Since(got) {
 		t.Errorf("Expected %s to be close to now, got %s instead", name, got)
 	}
 }
 
 func assertTaskEquals(t *testing.T, got, want Task) {
+	t.Helper()
 	assertEquals(t, "Created At", got.CreatedAt.String(), want.CreatedAt.String())
 	assertEquals(t, "Modified At", got.ModifiedAt.String(), want.CreatedAt.String())
 	assertEquals(t, "Status", got.Status, want.Status)
@@ -29,6 +33,7 @@ func assertTaskEquals(t *testing.T, got, want Task) {
 }
 
 func assertTaskListEquals(t *testing.T, got, want TaskList) {
+	t.Helper()
 	if got.Size != want.Size {
 		t.Errorf("Size Error. Want: %d, Got: %d", want.Size, got.Size)
 	}
@@ -129,4 +134,64 @@ func TestTaskListFileIO(t *testing.T) {
 	// Verify Contents
 	assertTaskListEquals(t, gotTaskList, taskList)
 
+}
+
+func TestFindTask(t *testing.T) {
+
+	// helper function, create structured task list and return slice of task ids
+	createStructuredTaskListAndTaskIDSlice := func(t testing.TB, upperBound int) (TaskList, []uint64) {
+		// Create a taskList, create a slice of uint64 to save taskID's
+		tl := NewTaskList()
+		taskIds := make([]uint64, 0, 10)
+
+		// create 10 Tasks , save id's to slice
+		for i := 0; i < 10; i++ {
+			newTask := NewTask()
+			newTask.Description = fmt.Sprintf("Task: %d", i)
+			taskIds = append(taskIds, newTask.Id)
+			tl.AddTask(newTask)
+		}
+		return tl, taskIds
+	}
+	t.Run("Test FindTask Method", func(t *testing.T) {
+
+		tl, taskIds := createStructuredTaskListAndTaskIDSlice(t, 10)
+
+		//randomly seelect 1 id from the slice
+		randomIndex := rand.Intn(len(taskIds))
+		randomTaskId := taskIds[randomIndex]
+
+		// find random Task
+		newTask, err := tl.FindTask(randomTaskId)
+		if err != nil {
+			t.Errorf("couldn't find task: %v \t Error: %v", newTask, err)
+		}
+
+		// check that new Task Id is correct ID
+		if newTask.Id != randomTaskId {
+			t.Errorf("Wanted: %d, Got: %d", randomTaskId, newTask.Id)
+		}
+
+	})
+
+	t.Run("Test that Find Task Method Fails when no task is found", func(t *testing.T) {
+
+		// create structured task list, don't need task id slice
+		tl, _ := createStructuredTaskListAndTaskIDSlice(t, 10)
+
+		// generate random task id
+		randomTaskId := rand.Uint64()
+
+		// find task with this random id
+		failedTask, err := tl.FindTask(randomTaskId)
+
+		// check to see if findTask Failed, if not report error
+		if err == nil {
+			t.Errorf("FindTask did not fail as expected, %v", err)
+		}
+
+		// assert failed task equals empty task
+		assertTaskEquals(t, failedTask, Task{})
+
+	})
 }
