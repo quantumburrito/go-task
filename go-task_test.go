@@ -192,7 +192,9 @@ func TestFindTask(t *testing.T) {
 		}
 
 		// assert failed task equals empty task
-		assertTaskEquals(t, failedTask, Task{})
+		if failedTask != nil {
+			t.Errorf("Find Task did not fail as expected, failedTask != nil")
+		}
 
 	})
 }
@@ -219,7 +221,7 @@ func TestUpdateTask(t *testing.T) {
 
 	})
 
-	t.Run("Incorrect Implementatino of Update Task", func(t *testing.T) {
+	t.Run("Incorrect Implementation of Update Task", func(t *testing.T) {
 		// same as before, ignore task id slice
 		tl, _ := createStructuredTaskListAndTaskIDSlice(t, 10)
 
