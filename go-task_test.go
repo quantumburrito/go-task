@@ -9,6 +9,22 @@ import (
 	"time"
 )
 
+// helper function, create structured task list and return slice of task ids
+func createStructuredTaskListAndTaskIDSlice(t testing.TB, upperBound int) (TaskList, []uint64) {
+	// Create a taskList, create a slice of uint64 to save taskID's
+	tl := NewTaskList()
+	taskIds := make([]uint64, 0, 10)
+
+	// create 10 Tasks , save id's to slice
+	for i := 0; i < 10; i++ {
+		newTask := NewTask()
+		newTask.Description = fmt.Sprintf("Task: %d", i)
+		taskIds = append(taskIds, newTask.Id)
+		tl.AddTask(newTask)
+	}
+	return tl, taskIds
+}
+
 func assertEquals(t *testing.T, field string, got, want interface{}) {
 	t.Helper()
 	if got != want {
@@ -138,21 +154,6 @@ func TestTaskListFileIO(t *testing.T) {
 
 func TestFindTask(t *testing.T) {
 
-	// helper function, create structured task list and return slice of task ids
-	createStructuredTaskListAndTaskIDSlice := func(t testing.TB, upperBound int) (TaskList, []uint64) {
-		// Create a taskList, create a slice of uint64 to save taskID's
-		tl := NewTaskList()
-		taskIds := make([]uint64, 0, 10)
-
-		// create 10 Tasks , save id's to slice
-		for i := 0; i < 10; i++ {
-			newTask := NewTask()
-			newTask.Description = fmt.Sprintf("Task: %d", i)
-			taskIds = append(taskIds, newTask.Id)
-			tl.AddTask(newTask)
-		}
-		return tl, taskIds
-	}
 	t.Run("Test FindTask Method", func(t *testing.T) {
 
 		tl, taskIds := createStructuredTaskListAndTaskIDSlice(t, 10)
@@ -191,7 +192,50 @@ func TestFindTask(t *testing.T) {
 		}
 
 		// assert failed task equals empty task
-		assertTaskEquals(t, failedTask, Task{})
+		if failedTask != nil {
+			t.Errorf("Find Task did not fail as expected, failedTask != nil")
+		}
 
+	})
+}
+
+func TestUpdateTask(t *testing.T) {
+	t.Run("Correct implementaion of Update Task", func(t *testing.T) {
+		// create task list and task id slice with 10 random tasks
+		tl, tIds := createStructuredTaskListAndTaskIDSlice(t, 10)
+
+		// create a new task to update
+		updatedTask := NewTask()
+		updatedTask.Description = "Updated Task"
+		updatedTask.Status = "Done"
+
+		// select random task Id from tIds list, assign to updatedTask
+		randomIndex := rand.Intn(len(tIds))
+		updatedTask.Id = tIds[randomIndex]
+
+		// update task with id
+		err := tl.UpdateTask(updatedTask)
+		if err != nil {
+			t.Errorf("updateTask failed to update task: %v", err)
+		}
+
+	})
+
+	t.Run("Incorrect Implementation of Update Task", func(t *testing.T) {
+		// same as before, ignore task id slice
+		tl, _ := createStructuredTaskListAndTaskIDSlice(t, 10)
+
+		// create a new task to update
+		updatedTask := NewTask()
+		updatedTask.Description = "Updated Task"
+		updatedTask.Status = "Done"
+
+		// update task with id
+		err := tl.UpdateTask(updatedTask)
+
+		// if error is not encountered, fail
+		if err == nil {
+			t.Errorf("UpdateTask Expected to fail but didn't: %v", err)
+		}
 	})
 }
