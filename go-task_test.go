@@ -1,6 +1,9 @@
 package go_task
 
 import (
+	"fmt"
+	"log"
+	"os"
 	"testing"
 	"time"
 )
@@ -18,8 +21,19 @@ func assertTimeCloseToNow(t *testing.T, name string, got time.Time) {
 }
 
 func assertTaskEquals(t *testing.T, got, want Task) {
-	if got != want {
-		t.Errorf("Wanted: %v, Got %v", want, got)
+	assertEquals(t, "Created At", got.CreatedAt.String(), want.CreatedAt.String())
+	assertEquals(t, "Modified At", got.ModifiedAt.String(), want.CreatedAt.String())
+	assertEquals(t, "Status", got.Status, want.Status)
+	assertEquals(t, "Description", got.Description, want.Description)
+	assertEquals(t, "ID", got.Id, want.Id)
+}
+
+func assertTaskListEquals(t *testing.T, got, want TaskList) {
+	if got.Size != want.Size {
+		t.Errorf("Size Error. Want: %d, Got: %d", want.Size, got.Size)
+	}
+	for index, task := range got.Tasks {
+		assertTaskEquals(t, task, want.Tasks[index])
 	}
 }
 
@@ -83,6 +97,36 @@ func TestTaskList(t *testing.T) {
 		}
 	})
 }
-func TestReadTodoFile(t *testing.T) {
-	// TODO:: implement test to read mock todo file
+
+func TestTaskListFileIO(t *testing.T) {
+	// Create a temporary File
+	file, err := os.CreateTemp("", "example.tasks")
+	if err != nil {
+		log.Fatalf("Temp File %s could not be created", file.Name())
+	}
+	// at the end of the test, defer to removing the file
+	defer os.Remove(file.Name())
+
+	// Create TaskList and polulate with 5 random tasks
+	taskList := NewTaskList()
+	for i := 0; i < 5; i++ {
+		task := NewTask()
+		task.Description = fmt.Sprintf("Task Number: %d", i)
+		taskList.AddTask(task)
+	}
+
+	// Write taskList to the temporary File
+	if err := taskList.WriteToFile(file); err != nil {
+		t.Fatalf("Failed to Write to file: %v", err)
+	}
+
+	// Read back into a new TaskList
+	gotTaskList := NewTaskList()
+	if err := gotTaskList.ReadFromFile(file); err != nil {
+		t.Fatalf("Failed to Read from file: %v", err)
+	}
+
+	// Verify Contents
+	assertTaskListEquals(t, gotTaskList, taskList)
+
 }
