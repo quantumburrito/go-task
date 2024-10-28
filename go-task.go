@@ -88,3 +88,13 @@ func (t *TaskList) WriteToFile(file *os.File) error {
 
 	return nil
 }
+
+func (t *TaskList) FindTask(unknownID uint64) (Task, error) {
+	for _, task := range t.Tasks {
+		if task.Id == unknownID {
+			return task, nil
+		}
+	}
+
+	return Task{}, fmt.Errorf("task with id: %d not found", unknownID)
+}
