@@ -137,6 +137,8 @@ func TestTaskListFileIO(t *testing.T) {
 }
 
 func TestFindTask(t *testing.T) {
+
+	// helper function, create structured task list and return slice of task ids
 	createStructuredTaskListAndTaskIDSlice := func(t testing.TB, upperBound int) (TaskList, []uint64) {
 		// Create a taskList, create a slice of uint64 to save taskID's
 		tl := NewTaskList()
@@ -173,14 +175,21 @@ func TestFindTask(t *testing.T) {
 	})
 
 	t.Run("Test that Find Task Method Fails when no task is found", func(t *testing.T) {
+
+		// create structured task list, don't need task id slice
 		tl, _ := createStructuredTaskListAndTaskIDSlice(t, 10)
+
+		// generate random task id
 		randomTaskId := rand.Uint64()
+
+		// find task with this random id
 		failedTask, err := tl.FindTask(randomTaskId)
 
 		// check to see if findTask Failed, if not report error
 		if err == nil {
 			t.Errorf("FindTask did not fail as expected, %v", err)
 		}
+
 		// assert failed task equals empty task
 		assertTaskEquals(t, failedTask, Task{})
 
