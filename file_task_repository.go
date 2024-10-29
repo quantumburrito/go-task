@@ -2,6 +2,7 @@ package gotask
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -95,5 +96,21 @@ func (t *FileTaskRepository) Update(newTask Task) error {
 	foundTask.Status = newTask.Status
 
 	return nil
+
+}
+
+func (t *FileTaskRepository) DescribeTasks() (string, error) {
+	taskList := ""
+	var err error
+
+	if t.Size == 0 {
+		err = errors.New("can't list tasks of tasklist with size = 0")
+		return taskList, err
+	}
+	for _, item := range t.Tasks {
+		taskList += fmt.Sprintf("%d\t%s\t%s\t%s\t%s\n", item.Id, item.Description, item.Status, item.CreatedAt.String(), item.ModifiedAt.String())
+	}
+
+	return taskList, err
 
 }

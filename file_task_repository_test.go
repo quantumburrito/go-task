@@ -170,21 +170,34 @@ func TestUpdate_FileTaskRepository(t *testing.T) {
 }
 
 // Test List All Tasks
-func TestListAllTasks_TaskRepository(t *testing.T) {
-	tl, _ := createStructuredFileTaskRepositoryAndTaskIDSlice(t, 10)
+func TestDescribeTasks_TaskRepository(t *testing.T) {
+	t.Run("Print Tasks in newly created task list", func(t *testing.T) {
+		tl, _ := createStructuredFileTaskRepositoryAndTaskIDSlice(t, 10)
 
-	got, err := tl.ListAllTasks()
-	if err != nil {
-		t.Errorf("Couldn't List all Tasks: %v", err)
-	}
-	var want string
+		got, err := tl.DescribeTasks()
+		if err != nil {
+			t.Errorf("Couldn't List all Tasks: %v", err)
+		}
+		var want string
 
-	for _, item := range tl.Tasks {
-		want += fmt.Sprintf("%d\t%s\t%s\t%s\n", item.Id, item.Description, item.Status, item.CreatedAt.String(), item.ModifiedAt.String())
-	}
+		for _, item := range tl.Tasks {
+			want += fmt.Sprintf("%d\t%s\t%s\t%s\t%s\n", item.Id, item.Description, item.Status, item.CreatedAt.String(), item.ModifiedAt.String())
+		}
 
-	if want != got {
-		t.Errorf("Want:\t%s \n Got:\t%s\n", want, got)
-	}
+		if want != got {
+			t.Errorf("Want:\t%s \n Got:\t%s\n", want, got)
+		}
+	})
+	t.Run("Attempt to list tasks with ", func(t *testing.T) {
+		tl := NewFileTaskRepository()
+		got, err := tl.DescribeTasks()
+		if err == nil {
+			t.Errorf("trying to list tasks from task repository with no tasks did not return err: %v", err)
+		}
+		if got != "" {
+			t.Errorf("trying to list tasks from task repository with size=0 did not return empty string")
+		}
+
+	})
 
 }
