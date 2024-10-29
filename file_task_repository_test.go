@@ -6,78 +6,7 @@ import (
 	"math/rand"
 	"os"
 	"testing"
-	"time"
 )
-
-// helper function, create structured task list and return slice of task ids
-func createStructuredFileTaskRepositoryAndTaskIDSlice(t testing.TB, upperBound int) (FileTaskRepository, []uint64) {
-	// Create a FileTaskRepository, create a slice of uint64 to save taskID's
-	tl := NewFileTaskRepository()
-	taskIds := make([]uint64, 0, 10)
-
-	// create 10 Tasks , save id's to slice
-	for i := 0; i < 10; i++ {
-		newTask := NewTask()
-		newTask.Description = fmt.Sprintf("Task: %d", i)
-		taskIds = append(taskIds, newTask.Id)
-		tl.AddTask(newTask)
-	}
-	return tl, taskIds
-}
-
-func assertEquals(t *testing.T, field string, got, want interface{}) {
-	t.Helper()
-	if got != want {
-		t.Errorf("Field: %s, Wanted: %v, Got %v", field, got, want)
-	}
-}
-
-func assertTimeCloseToNow(t *testing.T, name string, got time.Time) {
-	t.Helper()
-	if time.Second < time.Since(got) {
-		t.Errorf("Expected %s to be close to now, got %s instead", name, got)
-	}
-}
-
-func assertTaskEquals(t *testing.T, got, want Task) {
-	t.Helper()
-	assertEquals(t, "Created At", got.CreatedAt.String(), want.CreatedAt.String())
-	assertEquals(t, "Modified At", got.ModifiedAt.String(), want.CreatedAt.String())
-	assertEquals(t, "Status", got.Status, want.Status)
-	assertEquals(t, "Description", got.Description, want.Description)
-	assertEquals(t, "ID", got.Id, want.Id)
-}
-
-func assertFileTaskRepositoryEquals(t *testing.T, got, want FileTaskRepository) {
-	t.Helper()
-	if got.Size != want.Size {
-		t.Errorf("Size Error. Want: %d, Got: %d", want.Size, got.Size)
-	}
-	for index, task := range got.Tasks {
-		assertTaskEquals(t, task, want.Tasks[index])
-	}
-}
-
-func TestCreate_Task(t *testing.T) {
-	t.Run("Test Task Constructor", func(t *testing.T) {
-		got := NewTask()
-		tests := []struct {
-			field string
-			got   interface{}
-			want  interface{}
-		}{
-			{"Description", got.Description, ""},
-			{"Status", got.Status, "ToDo"},
-		}
-		for _, tt := range tests {
-			assertEquals(t, tt.field, tt.got, tt.want)
-		}
-
-		assertTimeCloseToNow(t, "Created At", got.CreatedAt)
-		assertTimeCloseToNow(t, "Modified At", got.ModifiedAt)
-
-	})
-}
 
 func TestFileTaskRepository(t *testing.T) {
 	t.Run("Test Task List Constructor", func(t *testing.T) {
@@ -238,4 +167,24 @@ func TestUpdate_FileTaskRepository(t *testing.T) {
 			t.Errorf("Update Expected to fail but didn't: %v", err)
 		}
 	})
+}
+
+// Test List All Tasks
+func TestListAllTasks_TaskRepository(t *testing.T) {
+	tl, _ := createStructuredFileTaskRepositoryAndTaskIDSlice(t, 10)
+
+	got, err := tl.ListAllTasks()
+	if err != nil {
+		t.Errorf("Couldn't List all Tasks: %v", err)
+	}
+	var want string
+
+	for _, item := range tl.Tasks {
+		want += fmt.Sprintf("%d\t%s\t%s\t%s\n", item.Id, item.Description, item.Status, item.CreatedAt.String(), item.ModifiedAt.String())
+	}
+
+	if want != got {
+		t.Errorf("Want:\t%s \n Got:\t%s\n", want, got)
+	}
+
 }
