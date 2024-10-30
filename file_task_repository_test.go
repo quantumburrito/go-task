@@ -232,6 +232,18 @@ func TestDescribeTasks_TaskRepository(t *testing.T) {
 			t.Errorf("Strings to not match\nWant: %s\nGot: %s\n", want, got)
 		}
 
+		got, err = tl.DescribeTasks("Done")
+		if err != nil {
+			t.Errorf("Problem Fetching 'Done' elements form tasklist: %v", err)
+		}
+		want, err = doneList.DescribeTasks("")
+		if err != nil {
+			t.Errorf("Problem Describing toDoList: %v", err)
+		}
+		if want != got {
+			t.Errorf("Strings to not match\nWant: %s\nGot: %s\n", want, got)
+		}
+
 	})
 
 }
