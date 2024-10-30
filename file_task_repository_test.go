@@ -204,8 +204,12 @@ func TestDescribeTasks_TaskRepository(t *testing.T) {
 		// Something like tl.DescribeTasks("ToDo")
 		// lol
 
-		tl, _ := createStructuredFileTaskRepositoryAndTaskIDSlice(t, 10)
+		//tl, _ := createStructuredFileTaskRepositoryAndTaskIDSlice(t, 10)
 
 	})
 
+}
+
+func TestDeleteTaskFrom_Tasklist(t *testing.T) {
+	t.Run("Delete task with specific ID from tasklist")
 }
