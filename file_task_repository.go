@@ -99,8 +99,8 @@ func (t *FileTaskRepository) Update(newTask Task) error {
 
 }
 
-func (t *FileTaskRepository) DescribeTasks() (string, error) {
 
+func (t *FileTaskRepository) DescribeTasks(status string) (string, error) {
 	taskList := ""
 	var err error
 
@@ -108,10 +108,47 @@ func (t *FileTaskRepository) DescribeTasks() (string, error) {
 		err = errors.New("can't list tasks of tasklist with size = 0")
 		return taskList, err
 	}
-	for _, item := range t.Tasks {
-		taskList += fmt.Sprintf("%d\t%s\t%s\t%s\t%s\n", item.Id, item.Description, item.Status, item.CreatedAt.String(), item.ModifiedAt.String())
+	if status == "" {
+		for _, item := range t.Tasks {
+			taskList += fmt.Sprintf("%d\t%s\t%s\t%s\t%s\n", item.Id, item.Description, item.Status, item.CreatedAt.String(), item.ModifiedAt.String())
+		}
+	} else {
+		for _, item := range t.Tasks {
+			if item.Status == status {
+				taskList += fmt.Sprintf("%d\t%s\t%s\t%s\t%s\n", item.Id, item.Description, item.Status, item.CreatedAt.String(), item.ModifiedAt.String())
+			}
+		}
 	}
 
 	return taskList, err
 
+}
+
+func (t *FileTaskRepository) Delete(id uint64) error {
+	task, err := t.Retrieve(id)
+	if err != nil {
+		return fmt.Errorf("Delete opeartion failed, %s", err)
+	}
+
+	// find the index of the task to delete
+	index := -1
+	for i, item := range t.Tasks {
+		if item.Id == task.Id {
+			index = i
+			break
+		}
+	}
+
+	// If the task was not found return an error
+	if index == -1 {
+		return fmt.Errorf("task with id %d not found", id)
+	}
+
+	// Delete the task from the slice
+	t.Tasks = append(t.Tasks[:index], t.Tasks[index+1:]...)
+
+	// change size after incrementation
+	t.Size -= 1
+
+	return nil
 }
