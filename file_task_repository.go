@@ -114,3 +114,32 @@ func (t *FileTaskRepository) DescribeTasks() (string, error) {
 	return taskList, err
 
 }
+
+func (t *FileTaskRepository) Delete(id uint64) error {
+	task, err := t.Retrieve(id)
+	if err != nil {
+		return fmt.Errorf("Delete opeartion failed, %s", err)
+	}
+
+	// find the index of the task to delete
+	index := -1
+	for i, item := range t.Tasks {
+		if item.Id == task.Id {
+			index = i
+			break
+		}
+	}
+
+	// If the task was not found return an error
+	if index == -1 {
+		return fmt.Errorf("task with id %d not found", id)
+	}
+
+	// Delete the task from the slice
+	t.Tasks = append(t.Tasks[:index], t.Tasks[index+1:]...)
+
+	// change size after incrementation
+	t.Size -= 1
+
+	return nil
+}
