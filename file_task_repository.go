@@ -99,7 +99,7 @@ func (t *FileTaskRepository) Update(newTask Task) error {
 
 }
 
-func (t *FileTaskRepository) DescribeTasks() (string, error) {
+func (t *FileTaskRepository) DescribeTasks(status string) (string, error) {
 	taskList := ""
 	var err error
 
@@ -107,8 +107,16 @@ func (t *FileTaskRepository) DescribeTasks() (string, error) {
 		err = errors.New("can't list tasks of tasklist with size = 0")
 		return taskList, err
 	}
-	for _, item := range t.Tasks {
-		taskList += fmt.Sprintf("%d\t%s\t%s\t%s\t%s\n", item.Id, item.Description, item.Status, item.CreatedAt.String(), item.ModifiedAt.String())
+	if status == "" {
+		for _, item := range t.Tasks {
+			taskList += fmt.Sprintf("%d\t%s\t%s\t%s\t%s\n", item.Id, item.Description, item.Status, item.CreatedAt.String(), item.ModifiedAt.String())
+		}
+	} else {
+		for _, item := range t.Tasks {
+			if item.Status == status {
+				taskList += fmt.Sprintf("%d\t%s\t%s\t%s\t%s\n", item.Id, item.Description, item.Status, item.CreatedAt.String(), item.ModifiedAt.String())
+			}
+		}
 	}
 
 	return taskList, err

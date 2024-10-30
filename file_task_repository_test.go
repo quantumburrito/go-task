@@ -174,7 +174,7 @@ func TestDescribeTasks_TaskRepository(t *testing.T) {
 	t.Run("Print Tasks in newly created task list", func(t *testing.T) {
 		tl, _ := createStructuredFileTaskRepositoryAndTaskIDSlice(t, 10)
 
-		got, err := tl.DescribeTasks()
+		got, err := tl.DescribeTasks("")
 		if err != nil {
 			t.Errorf("Couldn't List all Tasks: %v", err)
 		}
@@ -190,7 +190,7 @@ func TestDescribeTasks_TaskRepository(t *testing.T) {
 	})
 	t.Run("Attempt to list tasks with ", func(t *testing.T) {
 		tl := NewFileTaskRepository()
-		got, err := tl.DescribeTasks()
+		got, err := tl.DescribeTasks("")
 		if err == nil {
 			t.Errorf("trying to list tasks from task repository with no tasks did not return err: %v", err)
 		}
@@ -204,7 +204,33 @@ func TestDescribeTasks_TaskRepository(t *testing.T) {
 		// Something like tl.DescribeTasks("ToDo")
 		// lol
 
-		//tl, _ := createStructuredFileTaskRepositoryAndTaskIDSlice(t, 10)
+		tl, _ := createStructuredFileTaskRepositoryAndTaskIDSlice(t, 10)
+		toDoList := NewFileTaskRepository()
+		doneList := NewFileTaskRepository()
+		for i := 0; i < 10; i++ {
+			randomBool := rand.Intn(2) == 0
+
+			// assign done to random boolean
+			if randomBool == true {
+				tl.Tasks[i].Status = "Done"
+				doneList.AddTask(tl.Tasks[i])
+			} else {
+				toDoList.AddTask(tl.Tasks[i])
+			}
+
+		}
+
+		got, err := tl.DescribeTasks("ToDo")
+		if err != nil {
+			t.Errorf("Problem Fetching 'ToDo' elements form tasklist: %v", err)
+		}
+		want, err := toDoList.DescribeTasks("")
+		if err != nil {
+			t.Errorf("Problem Describing toDoList: %v", err)
+		}
+		if want != got {
+			t.Errorf("Strings to not match\nWant: %s\nGot: %s\n", want, got)
+		}
 
 	})
 
