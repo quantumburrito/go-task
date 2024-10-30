@@ -204,8 +204,79 @@ func TestDescribeTasks_TaskRepository(t *testing.T) {
 		// Something like tl.DescribeTasks("ToDo")
 		// lol
 
-		tl, _ := createStructuredFileTaskRepositoryAndTaskIDSlice(t, 10)
+		//tl, _ := createStructuredFileTaskRepositoryAndTaskIDSlice(t, 10)
 
 	})
 
+}
+
+func TestDeleteTaskFrom_Tasklist(t *testing.T) {
+	t.Run("Delete task from tasklist that is only 1 item long", func(t *testing.T) {
+		tl := NewFileTaskRepository()
+		nt := NewTask()
+		nt.Description = "Task to Delete"
+		taskId := nt.Id
+		tl.AddTask(nt)
+
+		err := tl.Delete(taskId)
+
+		// if err != nil error out
+		if err != nil {
+			t.Errorf("error returned not nil! %v", err)
+		}
+
+		// assert that the Size property of tl == 0
+		if tl.Size != 0 {
+			t.Errorf("tl size is not 0 after delete operation")
+		}
+
+		// assert tl.Task is empty (size of slice is 0)
+		if len(tl.Tasks) != 0 {
+			t.Errorf("tl Tasks is not equal to empty task slice")
+		}
+
+	})
+
+	t.Run("Delete a specific task from taskList given task Id, preserve list", func(t *testing.T) {
+
+		// create taskrepository with 10 items
+		tl, idSlice := createStructuredFileTaskRepositoryAndTaskIDSlice(t, 10)
+
+		// pick 1 random item from the list,
+		randomID := idSlice[rand.Intn(10)]
+
+		taskRepoSize := tl.Size
+
+		// copy randomID element from Slice
+		randomTask, err := tl.Retrieve(randomID)
+
+		if err != nil {
+			t.Errorf("retrieval error not equal to nil %s", err)
+		}
+
+		// delete task
+		err = tl.Delete(randomID)
+
+		// check error
+		if err != nil {
+			t.Errorf("error returned when delete operation on TaskList")
+		}
+
+		// check to see that randomTask is not in tl
+		task, err := tl.Retrieve(randomID)
+
+		if err == nil {
+			t.Errorf("error not returend when searching for deleted item")
+		}
+
+		if task == randomTask {
+			t.Errorf("task item returned == random Task, randomTask Not Removed as expected")
+		}
+
+		// assert that tl size is 1 less than taskRepoSize
+		if len(tl.Tasks) != taskRepoSize-1 {
+			t.Errorf("taskreposize is not 1 less than tl.Tasks")
+		}
+
+	})
 }
