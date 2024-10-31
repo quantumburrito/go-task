@@ -136,7 +136,7 @@ func TestUpdate_FileTaskRepository(t *testing.T) {
 		// create a new task to update
 		updatedTask := NewTask()
 		updatedTask.Description = "Updated Task"
-		updatedTask.Status = "Done"
+		updatedTask.Status = Done
 
 		// select random task Id from tIds list, assign to updatedTask
 		randomIndex := rand.Intn(len(tIds))
@@ -157,7 +157,7 @@ func TestUpdate_FileTaskRepository(t *testing.T) {
 		// create a new task to update
 		updatedTask := NewTask()
 		updatedTask.Description = "Updated Task"
-		updatedTask.Status = "Done"
+		updatedTask.Status = Done
 
 		// update task with id
 		err := tl.Update(updatedTask)
@@ -201,8 +201,6 @@ func TestDescribeTasks_TaskRepository(t *testing.T) {
 	})
 
 	t.Run("Attempt to list only Tasks with ToDo Status", func(t *testing.T) {
-		// Something like tl.DescribeTasks("ToDo")
-		// lol
 
 		tl, _ := createStructuredFileTaskRepositoryAndTaskIDSlice(t, 10)
 		toDoList := NewFileTaskRepository()
@@ -212,7 +210,7 @@ func TestDescribeTasks_TaskRepository(t *testing.T) {
 
 			// assign done to random boolean
 			if randomBool == true {
-				tl.Tasks[i].Status = "Done"
+				tl.Tasks[i].Status = Done
 				doneList.AddTask(tl.Tasks[i])
 			} else {
 				toDoList.AddTask(tl.Tasks[i])
@@ -220,11 +218,11 @@ func TestDescribeTasks_TaskRepository(t *testing.T) {
 
 		}
 
-		got, err := tl.DescribeTasks("ToDo")
+		got, err := tl.DescribeTasks(ToDo)
 		if err != nil {
 			t.Errorf("Problem Fetching 'ToDo' elements form tasklist: %v", err)
 		}
-		want, err := toDoList.DescribeTasks("")
+		want, err := toDoList.DescribeTasks()
 		if err != nil {
 			t.Errorf("Problem Describing toDoList: %v", err)
 		}
@@ -232,11 +230,11 @@ func TestDescribeTasks_TaskRepository(t *testing.T) {
 			t.Errorf("Strings to not match\nWant: %s\nGot: %s\n", want, got)
 		}
 
-		got, err = tl.DescribeTasks("Done")
+		got, err = tl.DescribeTasks(Done)
 		if err != nil {
 			t.Errorf("Problem Fetching 'Done' elements form tasklist: %v", err)
 		}
-		want, err = doneList.DescribeTasks("")
+		want, err = doneList.DescribeTasks()
 		if err != nil {
 			t.Errorf("Problem Describing toDoList: %v", err)
 		}
