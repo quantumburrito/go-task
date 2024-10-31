@@ -11,7 +11,7 @@ func TestCreate_Task(t *testing.T) {
 			want  interface{}
 		}{
 			{"Description", got.Description, ""},
-			{"Status", got.Status, "ToDo"},
+			{"Status", got.Status, ToDo},
 		}
 		for _, tt := range tests {
 			assertEquals(t, tt.field, tt.got, tt.want)
