@@ -25,7 +25,7 @@ Below is a checklist of all planned and implemented features based on project re
 - [ ] **Mark Task as In Progress**: Updates the status of a task to `In Progress`.
 - [ ] **Mark Task as Done**: Updates the status of a task to `Done`.
 - [ ] **List All Tasks**: Displays all tasks regardless of status.
-- [ ] **List Tasks by Status**: Filter tasks by status (`ToDo`, `In Progress`, `Done`).
+- [x] **List Tasks by Status**: Filter tasks by status (`ToDo`, `In Progress`, `Done`).
 
 ### Data Persistence
 - [ ] **JSON File Storage**: Saves tasks to a JSON file in the current directory.

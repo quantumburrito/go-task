@@ -8,7 +8,7 @@ import (
 type Task struct {
 	Description string
 	Id          uint64
-	Status      string
+	Status      Status
 	CreatedAt   time.Time
 	ModifiedAt  time.Time
 }
@@ -16,5 +16,5 @@ type Task struct {
 func NewTask() Task {
 	randNumber := rand.Uint64()
 	creationTime := time.Now().UTC() // using utc to ensure monolythic component is recovered
-	return Task{Description: "", Id: randNumber, Status: "ToDo", CreatedAt: creationTime, ModifiedAt: creationTime}
+	return Task{Description: "", Id: randNumber, Status: ToDo, CreatedAt: creationTime, ModifiedAt: creationTime}
 }
